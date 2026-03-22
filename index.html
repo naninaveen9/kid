@@ -1,1 +1,474 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Mom's Daily Routine</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f8f9fa;\n            color: #343a40;\n            margin: 0;\n            padding: 20px;\n        }\n        header {\n            background-color: #007bff;\n            color: white;\n            padding: 10px 0;\n            text-align: center;\n        }\n        .routine {\n            margin-top: 20px;\n        }\n        .routine-item {\n            background: white;\n            border: 1px solid #ccc;\n            border-radius: 5px;\n            margin: 10px 0;\n            padding: 10px;\n        }\n    </style>\n</head>\n<body>\n    <header>\n        <h1>Mom's Daily Routine</h1>\n    </header>\n    <div class="routine">\n        <div class="routine-item">\n            <h2>Morning Routine</h2>\n            <p>Wake up, take a shower, and have breakfast.</p>\n        </div>\n        <div class="routine-item">\n            <h2>Midday Routine</h2>\n            <p>Prepare lunch and assist kids with their homework.</p>\n        </div>\n        <div class="routine-item">\n            <h2>Evening Routine</h2>\n            <p>Dinner preparation and family time.</p>\n        </div>\n    </div>\n</body>\n</html>\n
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mom's Daily Routine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .today-label {
+            background: rgba(255,255,255,0.3);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #FF6B9D;
+            border-bottom: 3px solid #FF6B9D;
+            background: #fff5f7;
+        }
+        
+        .tab-btn:hover {
+            background: #f9f9f9;
+        }
+        
+        .stats-section {
+            padding: 20px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stats-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        #progressBar {
+            width: 100%;
+            height: 20px;
+            background: #E0E0E0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        #progressFill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        #progressText {
+            text-align: center;
+            margin-top: 8px;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .habits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .habit-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .habit-card:hover {
+            border-color: #FF6B9D;
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.1);
+        }
+        
+        .habit-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .habit-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .habit-status {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+        
+        .completion-circle {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .completion-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .missed-circle {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .missed-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+        }
+        
+        .habit-card.completed {
+            background: #f0fdf4;
+            border-color: #4CAF50;
+        }
+        
+        .habit-card.missed {
+            background: #fef2f2;
+            border-color: #f44336;
+        }
+        
+        #todayTab, #historyTab {
+            display: block;
+        }
+        
+        #historyTab {
+            display: none;
+        }
+        
+        .history-date {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+        
+        .history-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 0 20px;
+            margin-bottom: 10px;
+        }
+        
+        .history-item {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background: #CCC;
+        }
+        
+        .history-item.completed {
+            background: #4CAF50;
+        }
+        
+        .history-item.missed {
+            background: #f44336;
+        }
+        
+        @media (max-width: 480px) {
+            .habits-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👶 Mom's Daily Routine 💝</h1>
+            <div class="date" id="dateDisplay">Sunday, 22 March 2026</div>
+            <div class="today-label">TODAY ONLY</div>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('today')">Today</button>
+            <button class="tab-btn" onclick="switchTab('history')">History</button>
+        </div>
+
+        <div id="todayTab">
+            <div class="stats-section">
+                <div class="stats-title">📊 Today's Progress</div>
+                <div id="progressBar">
+                    <div id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div id="progressText">0 / 6</div>
+            </div>
+
+            <div class="habits-grid">
+                <div class="habit-card" data-habit="tablets">
+                    <div class="habit-icon">💊</div>
+                    <div class="habit-name">Tablets</div>
+                    <div class="habit-status">Take medicine</div>
+                    <div class="completion-circle" onclick="markComplete('tablets', true)">✓</div>
+                    <div class="missed-circle" onclick="markComplete('tablets', false)">✗</div>
+                </div>
+
+                <div class="habit-card" data-habit="milk">
+                    <div class="habit-icon">🥛</div>
+                    <div class="habit-name">Milk</div>
+                    <div class="habit-status">Drink milk</div>
+                    <div class="completion-circle" onclick="markComplete('milk', true)">✓</div>
+                    <div class="missed-circle" onclick="markComplete('milk', false)">✗</div>
+                </div>
+
+                <div class="habit-card" data-habit="fruits">
+                    <div class="habit-icon">🍎</div>
+                    <div class="habit-name">Fruits</div>
+                    <div class="habit-status">Eat fruits</div>
+                    <div class="completion-circle" onclick="markComplete('fruits', true)">✓</div>
+                    <div class="missed-circle" onclick="markComplete('fruits', false)">✗</div>
+                </div>
+
+                <div class="habit-card" data-habit="rest">
+                    <div class="habit-icon">😴</div>
+                    <div class="habit-name">Rest</div>
+                    <div class="habit-status">Take rest</div>
+                    <div class="completion-circle" onclick="markComplete('rest', true)">✓</div>
+                    <div class="missed-circle" onclick="markComplete('rest', false)">✗</div>
+                </div>
+
+                <div class="habit-card" data-habit="walking">
+                    <div class="habit-icon">🚶</div>
+                    <div class="habit-name">Walking</div>
+                    <div class="habit-status">Go for walk</div>
+                    <div class="completion-circle" onclick="markComplete('walking', true)">✓</div>
+                    <div class="missed-circle" onclick="markComplete('walking', false)">✗</div>
+                </div>
+
+                <div class="habit-card" data-habit="diet">
+                    <div class="habit-icon">🥗</div>
+                    <div class="habit-name">Healthy Diet</div>
+                    <div class="habit-status">Eat healthy</div>
+                    <div class="completion-circle" onclick="markComplete('diet', true)">✓</div>
+                    <div class="missed-circle" onclick="markComplete('diet', false)">✗</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyTab">
+            <div class="stats-section">
+                <div class="stats-title">📈 Last 30 Days Overview</div>
+            </div>
+            <div id="historyContent">
+                <div class="history-date">💊 Tablets</div>
+                <div class="history-items" id="history-tablets">
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                </div>
+                <div class="history-date">🥛 Milk</div>
+                <div class="history-items" id="history-milk">
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                </div>
+                <div class="history-date">🍎 Fruits</div>
+                <div class="history-items" id="history-fruits">
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                </div>
+                <div class="history-date">😴 Rest</div>
+                <div class="history-items" id="history-rest">
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                </div>
+                <div class="history-date">🚶 Walking</div>
+                <div class="history-items" id="history-walking">
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                </div>
+                <div class="history-date">🥗 Healthy Diet</div>
+                <div class="history-items" id="history-diet">
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                    <div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div><div class="history-item">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const habits = {};
+        const habitNames = ['tablets', 'milk', 'fruits', 'rest', 'walking', 'diet'];
+        
+        // Initialize habits data from localStorage
+        function initializeHabits() {
+            const today = new Date().toISOString().split('T')[0];
+            const storageKey = 'mom-habits-' + today;
+            
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                Object.assign(habits, JSON.parse(stored));
+            } else {
+                habitNames.forEach(h => {
+                    habits[h] = null; // null = not marked, true = completed, false = missed
+                });
+                saveHabits();
+            }
+        }
+        
+        function saveHabits() {
+            const today = new Date().toISOString().split('T')[0];
+            const storageKey = 'mom-habits-' + today;
+            localStorage.setItem(storageKey, JSON.stringify(habits));
+        }
+        
+        function markComplete(habitName, isComplete) {
+            habits[habitName] = isComplete;
+            saveHabits();
+            updateUI();
+        }
+        
+        function updateUI() {
+            // Update habit cards
+            habitNames.forEach(h => {
+                const card = document.querySelector(`[data-habit="${h}"]`);
+                card.classList.remove('completed', 'missed');
+                if (habits[h] === true) {
+                    card.classList.add('completed');
+                } else if (habits[h] === false) {
+                    card.classList.add('missed');
+                }
+            });
+            
+            // Update progress
+            const completed = habitNames.filter(h => habits[h] === true).length;
+            const total = habitNames.length;
+            const percentage = (completed / total) * 100;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = completed + ' / ' + total;
+        }
+        
+        function switchTab(tabName) {
+            document.getElementById('todayTab').style.display = tabName === 'today' ? 'block' : 'none';
+            document.getElementById('historyTab').style.display = tabName === 'history' ? 'block' : 'none';
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('dateDisplay').textContent = date;
+        }
+        
+        // Initialize on page load
+        updateDateDisplay();
+        initializeHabits();
+        updateUI();
+    </script>
+</body>
+</html>
