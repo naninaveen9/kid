@@ -3,42 +3,645 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History with localStorage</title>
+    <title>Mom's Daily Routine</title>
+    <meta name="theme-color" content="#FF6B9D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mom's Routine">
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Mom's Daily Routine&quot;,&quot;short_name&quot;:&quot;Mom Routine&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;theme_color&quot;:&quot;#FF6B9D&quot;,&quot;background_color&quot;:&quot;#ffffff&quot;}">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        ul { list-style-type: none; padding: 0; }
-        li { padding: 10px; border: 1px solid #ccc; margin-bottom: 10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(255, 107, 157, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #FF6B9D;
+            font-size: 28px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header .date {
+            color: #666;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .today-label {
+            background: #FFE0EC;
+            color: #FF6B9D;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .habits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .habit-card {
+            background: white;
+            border: 3px solid #E0E0E0;
+            border-radius: 20px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .habit-card:active {
+            transform: scale(0.95);
+        }
+
+        .habit-card.completed {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            border-color: #2E7D32;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .habit-card.missed {
+            background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+            border-color: #C62828;
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
+        }
+
+        .habit-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .habit-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .habit-card.completed .habit-name {
+            color: white;
+        }
+
+        .habit-card.missed .habit-name {
+            color: white;
+        }
+
+        .habit-status {
+            font-size: 12px;
+            opacity: 0.8;
+            color: #666;
+        }
+
+        .habit-card.completed .habit-status,
+        .habit-card.missed .habit-status {
+            color: white;
+        }
+
+        .stats-section {
+            background: #FFF9E6;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px dashed #FFD700;
+        }
+
+        .stats-title {
+            color: #FF6B9D;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .history-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .history-container.show {
+            display: block;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .history-items {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 5px;
+            max-width: 280px;
+        }
+
+        .history-item {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .history-item.completed {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .history-item.missed {
+            background: #F44336;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 350px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .modal-question {
+            font-size: 20px;
+            color: #FF6B9D;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-yes:active {
+            transform: scale(0.95);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-no:active {
+            transform: scale(0.95);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #DDD;
+            background: white;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+            color: white;
+            border-color: #FF6B9D;
+        }
+
+        .emoji-check {
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 20px;
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .habits-grid {
+                gap: 12px;
+            }
+
+            .habit-card {
+                padding: 12px;
+            }
+
+            .habit-icon {
+                font-size: 40px;
+                margin-bottom: 8px;
+            }
+
+            .habit-name {
+                font-size: 14px;
+            }
+        }
+
+        .completion-circle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25px;
+            height: 25px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .habit-card.completed .completion-circle {
+            display: flex;
+        }
+
+        .missed-circle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25px;
+            height: 25px;
+            background: #F44336;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .habit-card.missed .missed-circle {
+            display: flex;
+        }
     </style>
 </head>
 <body>
-    <h1>History from localStorage</h1>
-    <ul id="history"></ul>
-    <script>
-        function populateHistory() {
-            const historyList = document.getElementById('history');
-            const now = new Date();
-            const thirtyDaysAgo = new Date(now);
-            thirtyDaysAgo.setDate(now.getDate() - 30);
-            const historyItems = JSON.parse(localStorage.getItem('history')) || [];
+    <div class="container">
+        <div class="header">
+            <h1>👶 Mom's Daily Routine 💝</h1>
+            <div class="date" id="dateDisplay"></div>
+            <div class="today-label">TODAY ONLY</div>
+        </div>
 
-            historyItems.forEach(item => {
-                const itemDate = new Date(item.date);
-                if (itemDate >= thirtyDaysAgo) {
-                    const li = document.createElement('li');
-                    li.textContent = `Visited: ${item.url} on ${itemDate.toUTCString()}`;
-                    historyList.appendChild(li);
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('today')">Today</button>
+            <button class="tab-btn" onclick="showTab('history')">History</button>
+        </div>
+
+        <div id="todayTab">
+            <div class="stats-section">
+                <div class="stats-title">📊 Today's Progress</div>
+                <div id="progressBar" style="width: 100%; height: 20px; background: #E0E0E0; border-radius: 10px; overflow: hidden; margin-top: 10px;">
+                    <div id="progressFill" style="height: 100%; background: linear-gradient(90deg, #4CAF50, #66BB6A); width: 0%; transition: width 0.3s ease;"></div>
+                </div>
+                <div id="progressText" style="text-align: center; margin-top: 8px; color: #333; font-weight: bold; font-size: 16px;">0 / 6</div>
+            </div>
+
+            <div class="habits-grid">
+                <div class="habit-card" onclick="handleHabitClick(this, 'tablets', '💊', 'Tablets')">
+                    <div class="habit-icon">💊</div>
+                    <div class="habit-name">Tablets</div>
+                    <div class="habit-status">Take medicine</div>
+                    <div class="completion-circle">✓</div>
+                    <div class="missed-circle">✗</div>
+                </div>
+
+                <div class="habit-card" onclick="handleHabitClick(this, 'milk', '🥛', 'Milk')">
+                    <div class="habit-icon">🥛</div>
+                    <div class="habit-name">Milk</div>
+                    <div class="habit-status">Drink milk</div>
+                    <div class="completion-circle">✓</div>
+                    <div class="missed-circle">✗</div>
+                </div>
+
+                <div class="habit-card" onclick="handleHabitClick(this, 'fruits', '🍎', 'Fruits')">
+                    <div class="habit-icon">🍎</div>
+                    <div class="habit-name">Fruits</div>
+                    <div class="habit-status">Eat fruits</div>
+                    <div class="completion-circle">✓</div>
+                    <div class="missed-circle">✗</div>
+                </div>
+
+                <div class="habit-card" onclick="handleHabitClick(this, 'rest', '😴', 'Rest')">
+                    <div class="habit-icon">😴</div>
+                    <div class="habit-name">Rest</div>
+                    <div class="habit-status">Take rest</div>
+                    <div class="completion-circle">✓</div>
+                    <div class="missed-circle">✗</div>
+                </div>
+
+                <div class="habit-card" onclick="handleHabitClick(this, 'walking', '🚶', 'Walking')">
+                    <div class="habit-icon">🚶</div>
+                    <div class="habit-name">Walking</div>
+                    <div class="habit-status">Go for walk</div>
+                    <div class="completion-circle">✓</div>
+                    <div class="missed-circle">✗</div>
+                </div>
+
+                <div class="habit-card" onclick="handleHabitClick(this, 'diet', '🥗', 'Healthy Diet')">
+                    <div class="habit-icon">🥗</div>
+                    <div class="habit-name">Healthy Diet</div>
+                    <div class="habit-status">Eat healthy</div>
+                    <div class="completion-circle">✓</div>
+                    <div class="missed-circle">✗</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyTab" style="display: none;">
+            <div class="stats-section">
+                <div class="stats-title">📈 Last 30 Days Overview</div>
+                <div id="historyContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon"></div>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-question">Did Mom do this today? 🤔</div>
+            <div class="button-group">
+                <button class="btn btn-yes" onclick="confirmHabit(true)">YES ✓ (Green)</button>
+                <button class="btn btn-no" onclick="confirmHabit(false)">NO ✗ (Red)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage
+        const habits = ['tablets', 'milk', 'fruits', 'rest', 'walking', 'diet'];
+        const today = new Date().toISOString().split('T')[0];
+        let currentHabit = null;
+
+        // Set today's date display
+        function updateDateDisplay() {
+            const dateElement = document.getElementById('dateDisplay');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-IN', options);
+        }
+
+        // Initialize app
+        function initApp() {
+            updateDateDisplay();
+            loadTodayData();
+            renderHistoryTab();
+        }
+
+        // Load today's data from localStorage
+        function loadTodayData() {
+            const todayData = JSON.parse(localStorage.getItem(`habits_${today}`) || '{}');
+            
+            habits.forEach(habit => {
+                const card = document.querySelector(`[onclick*="${habit}"]`);
+                const status = todayData[habit];
+
+                // Remove previous classes
+                card.classList.remove('completed', 'missed');
+
+                if (status === true) {
+                    card.classList.add('completed');
+                } else if (status === false) {
+                    card.classList.add('missed');
                 }
             });
+
+            updateProgress();
         }
 
-        // Example of adding a history item - replace this with real usage
-        function addHistoryItem(url) {
-            const historyItems = JSON.parse(localStorage.getItem('history')) || [];
-            historyItems.push({ url, date: new Date().toISOString() });
-            localStorage.setItem('history', JSON.stringify(historyItems));
+        // Update progress bar
+        function updateProgress() {
+            const todayData = JSON.parse(localStorage.getItem(`habits_${today}`) || '{}');
+            const completed = Object.values(todayData).filter(v => v === true).length;
+            const total = habits.length;
+
+            document.getElementById('progressFill').style.width = (completed / total * 100) + '%';
+            document.getElementById('progressText').textContent = `${completed} / ${total}`;
         }
 
-        populateHistory();
+        // Handle habit card click
+        function handleHabitClick(element, habitId, icon, name) {
+            currentHabit = { id: habitId, icon, name, element };
+            
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = name;
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        // Confirm habit (yes/no)
+        function confirmHabit(isCompleted) {
+            document.getElementById('confirmModal').classList.remove('show');
+
+            const todayData = JSON.parse(localStorage.getItem(`habits_${today}`) || '{}');
+            todayData[currentHabit.id] = isCompleted;
+
+            localStorage.setItem(`habits_${today}`, JSON.stringify(todayData));
+
+            loadTodayData();
+
+            // Add to history
+            addToHistory(currentHabit.id, isCompleted);
+        }
+
+        // Add to history
+        function addToHistory(habitId, isCompleted) {
+            const historyKey = `history_${habitId}`;
+            let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+
+            history = history.filter(entry => entry.date !== today);
+            history.unshift({ date: today, completed: isCompleted });
+
+            // Keep last 30 days
+            history = history.slice(0, 30);
+
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        }
+
+        // Render history tab
+        function renderHistoryTab() {
+            const historyContent = document.getElementById('historyContent');
+            let html = '';
+
+            habits.forEach(habit => {
+                const historyKey = `history_${habit}`;
+                const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+                const last30 = history.slice(0, 30).reverse();
+
+                const habitNames = {
+                    'tablets': '💊 Tablets',
+                    'milk': '🥛 Milk',
+                    'fruits': '🍎 Fruits',
+                    'rest': '😴 Rest',
+                    'walking': '🚶 Walking',
+                    'diet': '🥗 Healthy Diet'
+                };
+
+                html += `
+                    <div class="history-date">${habitNames[habit]}</div>
+                    <div class="history-items">
+                `;
+
+                for (let i = 29; i >= 0; i--) {
+                    const entry = last30[i];
+                    if (entry) {
+                        const classes = entry.completed ? 'history-item completed' : 'history-item missed';
+                        const icon = entry.completed ? '✓' : '✗';
+                        const dateObj = new Date(entry.date);
+                        const day = dateObj.toLocaleDateString('en-IN', { weekday: 'short' });
+                        html += `<div class="${classes}" title="${entry.date} ${day}">${icon}</div>`;
+                    } else {
+                        html += `<div class="history-item" style="background: #CCC; opacity: 0.5;">-</div>`;
+                    }
+                }
+
+                html += `</div><br>`;
+            });
+
+            historyContent.innerHTML = html;
+        }
+
+        // Tab switching
+        function showTab(tab) {
+            document.getElementById('todayTab').style.display = tab === 'today' ? 'block' : 'none';
+            document.getElementById('historyTab').style.display = tab === 'history' ? 'block' : 'none';
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (tab === 'history') {
+                renderHistoryTab();
+            }
+        }
+
+        // Prevent marking past days (optional validation)
+        function isToday(dateString) {
+            return dateString === today;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initApp);
+
+        // Prevent future date marking (optional security)
+        document.addEventListener('contextmenu', (e) => {
+            // Just for safety, right-click context menu
+        });
     </script>
 </body>
 </html>
